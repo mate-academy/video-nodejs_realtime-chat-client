@@ -1,19 +1,39 @@
 // #region imports 
-import { useState } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import './App.css'
 import { MessageForm } from './MessageForm.jsx';
 import { MessageList } from './MessageList.jsx';
 // #endregion
 
-import { WebSocketLoader } from './WebSocket.jsx';
+const API_URL = 'http://127.0.0.1:5000/messages';
 
-const DataLoader = WebSocketLoader;
+const DataLoader = ({ onData }) => {
+  function loadData() {
+    axios.get(API_URL)
+      .then(res => {
+        onData(res.data);
+
+        loadData();
+      });
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  return (
+    <h1 className="title">
+      Chat application
+    </h1>
+  );
+};
 
 export function App() {
   const [messages, setMessages] = useState([]);
 
-  function saveData(message) {
-    setMessages(current => [message, ...current]);
+  function saveData(messagesFromServer) {
+    setMessages(messagesFromServer);
   }
 
   return (
@@ -23,5 +43,6 @@ export function App() {
       <MessageForm />
       <MessageList messages={messages} />
     </section>
-  )
+  );
 }
+
