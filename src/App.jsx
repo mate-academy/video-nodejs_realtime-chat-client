@@ -9,31 +9,28 @@ import { MessageList } from './MessageList.jsx';
 const API_URL = 'http://127.0.0.1:5000/messages';
 
 const DataLoader = ({ onData }) => {
-  function loadData() {
-    axios.get(API_URL)
-      .then(res => {
-        onData(res.data);
-
-        loadData();
-      });
-  }
-
   useEffect(() => {
-    loadData();
+    const source = new EventSource(API_URL);
+
+    source.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+
+      onData(message);
+    };
+
+    return () => {
+      source.close();
+    };
   }, []);
 
-  return (
-    <h1 className="title">
-      Chat application
-    </h1>
-  );
+  return <h1 className="title">Chat application</h1>;
 };
 
 export function App() {
   const [messages, setMessages] = useState([]);
 
-  function saveData(messagesFromServer) {
-    setMessages(messagesFromServer);
+  function saveData(message) {
+    setMessages(current => [message, ...current]);
   }
 
   return (

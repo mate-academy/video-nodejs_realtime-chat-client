@@ -14,7 +14,11 @@ export function ShortPollingLoader({ onData }) {
   useEffect(() => {
     loadData();
 
-    setInterval(loadData, 5000);
+    const timerId = setInterval(loadData, 5000);
+
+    return () => {
+      clearImmediate(timerId);
+    };
   }, []);
 
   return <h1 className="title">Short polling</h1>;
