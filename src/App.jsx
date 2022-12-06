@@ -5,15 +5,17 @@ import { MessageForm } from './MessageForm.jsx';
 import { MessageList } from './MessageList.jsx';
 // #endregion
 
-import { WebSocketLoader } from './WebSocket.jsx';
-
-const DataLoader = WebSocketLoader;
+const DataLoader = () => {
+  return (
+    <h1 className="title">Chat application</h1>
+  );
+};
 
 export function App() {
   const [messages, setMessages] = useState([]);
 
   function saveData(message) {
-    setMessages(current => [message, ...current]);
+    // update messages here
   }
 
   return (
