@@ -6,20 +6,24 @@ import { MessageForm } from './MessageForm.jsx';
 import { MessageList } from './MessageList.jsx';
 // #endregion
 
-const API_URL = 'http://127.0.0.1:5000/messages';
+const API_URL = 'ws://127.0.0.1:5000';
 
 const DataLoader = ({ onData }) => {
   useEffect(() => {
-    const source = new EventSource(API_URL);
+    const socket = new WebSocket(API_URL);
 
-    source.onmessage = (event) => {
+    socket.addEventListener('message', (event) => {
       const message = JSON.parse(event.data);
 
       onData(message);
-    };
+    });
+
+    socket.addEventListener('open', () => {
+      socket.send('Hi');
+    });
 
     return () => {
-      source.close();
+      socket.close();
     };
   }, []);
 
@@ -28,6 +32,8 @@ const DataLoader = ({ onData }) => {
 
 export function App() {
   const [messages, setMessages] = useState([]);
+
+  console.log(messages);
 
   function saveData(message) {
     setMessages(current => [message, ...current]);
